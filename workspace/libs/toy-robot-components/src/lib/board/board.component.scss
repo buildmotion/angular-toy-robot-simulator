@@ -1,0 +1,14 @@
+.robot-cell {
+    background-color: lightblue;
+    text-align: center;
+}
+
+.pi-robot {
+    font-size: 2rem;
+    color: #444;
+}
+
+.robot-cell i {
+    transition: transform 0.3s ease-in-out;
+}
+

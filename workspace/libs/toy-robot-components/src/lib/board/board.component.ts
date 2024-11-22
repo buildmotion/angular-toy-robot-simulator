@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Message, MessageService } from 'primeng/api';
 
+interface Cell {
+  x: number;
+  y: number;
+  active: boolean;
+}
+
 type Direction = 'NORTH' | 'EAST' | 'SOUTH' | 'WEST';
 
 // Ordered directions for circular rotation
@@ -22,13 +28,13 @@ const MOVES = {
 export class BoardComponent implements OnInit {
   messages!: Message[];
   robotPosition!: { x: number; y: number; f: Direction };
-  grid!: any[][];
+  grid!: Cell[][];
 
   constructor(private messageService: MessageService) {}
 
   ngOnInit() {
-    this.grid = Array.from({ length: 5 }, (_, rowIndex) =>
-      Array.from({ length: 5 }, (_, colIndex) => ({ rowIndex, colIndex }))
+    this.grid = Array.from({ length: 5 }, (_, x) =>
+      Array.from({ length: 5 }, (_, y) => ({ x, y, active: false }))
     );
   }
 

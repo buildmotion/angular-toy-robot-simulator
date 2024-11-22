@@ -120,3 +120,36 @@ CREATE libs/toy-robot-service/eslint.config.js
 UPDATE eslint.config.js
 UPDATE tsconfig.base.json
 ```
+
+## Serve and Debug the Web Application
+
+### Create a `Launch Chrome` Configuration
+
+Add a `launch.json` file to the `.vscode` folder in the root of the workspace. The file should contain the following configuration. This will allow you to debug the Angular application in Visual Studio Code.
+
+
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "toy-robot-ui",
+            "url": "http://localhost:4200",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}
+```
+
+### Serve the Web Application
+
+1. Run the yarn command: `yarn serve:ui`
+2. Press `F5` to start the debugger.
+
+The `serve:ui` script in the package.json file will build and serve the Angular application. The `--skip-nx-cache=true` flag is used to ensure that the application is built from scratch. The `--configuration=development` flag is used to specify the configuration to use when building the application.
+
+```json
+"serve:ui": "yarn nx run toy-robot-ui:serve --skip-nx-cache=true --configuration=development"
+```

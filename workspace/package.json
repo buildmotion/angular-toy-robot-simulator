@@ -2,7 +2,10 @@
   "name": "@workspace/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build:ui": "yarn nx run toy-robot-ui:build --skip-nx-cache=true --configuration=development",
+    "serve:ui": "yarn nx run toy-robot-ui:serve --skip-nx-cache=true --configuration=development"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~18.2.0",

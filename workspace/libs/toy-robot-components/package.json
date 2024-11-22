@@ -1,5 +1,5 @@
 {
-  "name": "@buldmotion/robot-toy-components",
+  "name": "@buildmotion/robot-toy-components",
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^18.2.0",

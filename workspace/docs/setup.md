@@ -1,8 +1,21 @@
 # Setup
 
+We will take advantage of the Nx workspace to create a monorepo that contains the following projects:
+
+- Web Application: Angular application that will be used to interact with the Toy Robot.
+- UI Component Library: Library that contains reusable components that can be used in other Angular applications.
+- Service Library: Library that contains services that will implement the business logic of the application.
+
 ## Create Workspace
 
-## Create Web Application 
+Use a terminal to create a new Nx workspace.
+
+```bash
+nmv use 20.12.2
+npx create-nx-workspace@19.8.11
+```
+
+## Create Web Application
 
 The command:
 
@@ -55,7 +68,7 @@ CREATE apps/toy-robot-ui/proxy.conf.json
 The purpose of the library is to create reusable components that can be used in other Angular web applications.
 
 ```bash
-nx generate @nx/angular:library --name=toy-robot-components --directory=libs/toy-robot-components --publishable=true --routing=true --importPath=@buldmotion/robot-toy-components --projectNameAndRootFormat=as-provided --simpleName=true --standalone=false --style=scss --no-interactive
+nx generate @nx/angular:library --name=toy-robot-components --directory=libs/toy-robot-components --publishable=true --routing=true --importPath=@buildmotion/robot-toy-components --projectNameAndRootFormat=as-provided --simpleName=true --standalone=false --style=scss --no-interactive
 ```
 
 The output.

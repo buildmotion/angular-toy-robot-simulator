@@ -16,7 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@buildmotion/toy-robot-service": ["libs/toy-robot-service/src/index.ts"],
-      "@buldmotion/robot-toy-components": [
+      "@buildmotion/robot-toy-components": [
         "libs/toy-robot-components/src/index.ts"
       ]
     }

@@ -21,6 +21,21 @@ UPDATE nx.json
 UPDATE tsconfig.base.json
 ```
 
+### UI Service
+
+We will create a component-specific service to manage the UI state of the `board` component. Use the Nx generator to create a new Angular service named `board-ui.service` in the `board` directory of the `toy-robot-components` library. The UI Service bridges the gap between the `board` component and the `board` component's UI state - it can connect to the business logic service.
+
+```bash
+npx nx generate @schematics/angular:service --name=board-ui.service --project=toy-robot-components --no-interactive
+```
+
+The output.
+
+```bash
+CREATE libs/toy-robot-components/src/lib/board/board-ui.service.service.spec.ts
+CREATE libs/toy-robot-components/src/lib/board/board-ui.service.service.ts
+```
+
 ### Create Default Route for Board Component
 
 To create a default route that lazy-loads a module in Angular, use the `loadChildren` property. This property lets you specify the path to the module you want to lazy-load. Here's a simple example to help you set up lazy-loading for a module named `ToyRobotComponentsModule`, which is located at the relative path `./path-to-module/ToyRobotComponentsModule`:

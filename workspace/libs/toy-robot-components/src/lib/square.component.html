@@ -1,0 +1,6 @@
+<div class="robot-square" [class.robot-present]="isRobotHere">
+    <ng-content>
+        <p>Square</p>
+        <i *ngIf="isRobotHere" class="pi pi-android"></i>
+    </ng-content>
+</div>

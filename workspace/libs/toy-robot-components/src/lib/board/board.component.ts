@@ -1,24 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { Message, MessageService } from 'primeng/api';
+import { DIRECTIONS, MOVES, RobotPosition } from '@buildmotion/toy-robot-service';
+import { Message } from 'primeng/api';
+import { BoardUIService } from './board-ui.service.service';
+import { Observable } from 'rxjs';
+
+// #region Interfaces (1)
 
 interface Cell {
+  // #region Properties (3)
+
+  active: boolean;
   x: number;
   y: number;
-  active: boolean;
+
+  // #endregion Properties (3)
 }
 
-type Direction = 'NORTH' | 'EAST' | 'SOUTH' | 'WEST';
+// #endregion Interfaces (1)
 
-// Ordered directions for circular rotation
-const DIRECTIONS: Direction[] = ['NORTH', 'EAST', 'SOUTH', 'WEST'];
-
-// Moves mapped to directions
-const MOVES = {
-  NORTH: { x: 0, y: 1 },
-  EAST: { x: 1, y: 0 },
-  SOUTH: { x: 0, y: -1 },
-  WEST: { x: -1, y: 0 },
-} as const;
+// #region Classes (1)
 
 @Component({
   selector: 'robot-board',
@@ -26,89 +26,107 @@ const MOVES = {
   styleUrls: ['./board.component.scss'],
 })
 export class BoardComponent implements OnInit {
-  messages!: Message[];
-  robotPosition!: { x: number; y: number; f: Direction };
-  grid!: Cell[][];
+  // #region Properties (3)
 
-  constructor(private messageService: MessageService) {}
+  public grid!: Cell[][];
+  public messages!: Message[];
+  public robotPosition!: RobotPosition;
 
-  ngOnInit() {
-    this.grid = Array.from({ length: 5 }, (_, x) =>
-      Array.from({ length: 5 }, (_, y) => ({ x, y, active: false }))
-    );
-  }
+  isValid$!: Observable<boolean>;
 
-  isValidCell(x: number, y: number): boolean {
-    return x >= 0 && x <= 4 && y >= 0 && y <= 4;
-  }
+  // #endregion Properties (3)
 
-  placeRobot(x: number, y: number) {
-    if (this.isValidCell(x, y)) {
-      this.robotPosition = { x, y, f: 'NORTH' };
-      this.showTemporaryMessage(
-        'success',
-        'Robot Placed',
-        `Placed at: ${x},${y}`
-      );
-    }
-  }
+  // #region Constructors (1)
 
-  private showTemporaryMessage(
-    severity: 'success' | 'error',
-    summary: string,
-    detail: string
-  ) {
-    this.messageService.add({ severity, summary, detail });
-    setTimeout(() => {
-      this.messageService.clear();
-    }, 3000);
-  }
+  constructor(private uiService: BoardUIService) {}
 
-  getRobotDirectionStyle(): any {
+  // #endregion Constructors (1)
+
+  // #region Public Methods (8)
+
+  public getRobotDirectionStyle(): any {
     // Implement your logic for robot direction style transformation
     return {}; // Dummy return for now
   }
 
-  isRobotHere(x: number, y: number): boolean {
-    if (!this.robotPosition) return false;
-    return this.robotPosition.x === x && this.robotPosition.y === y;
+  public isRobotHere(x: number, y: number): boolean {
+    let showRobot = false;
+    if (!this.robotPosition) {
+      return showRobot;
+    } else {
+      showRobot = this.robotPosition.x === x && this.robotPosition.y === y;
+    }
+    return showRobot;
   }
 
-  report() {
-    if (!this.robotPosition) return;
-    this.showTemporaryMessage(
-      'success',
-      'Robot Report',
-      `${this.robotPosition.x},${this.robotPosition.y},${this.robotPosition.f}`
-    );
-  }
-
-  turnLeft() {
-    if (!this.robotPosition) return;
-    const currentIndex = DIRECTIONS.indexOf(this.robotPosition.f);
-    this.robotPosition.f = DIRECTIONS[(currentIndex + 3) % DIRECTIONS.length]; // Turns left
-  }
-
-  turnRight() {
-    if (!this.robotPosition) return;
-    const currentIndex = DIRECTIONS.indexOf(this.robotPosition.f);
-    this.robotPosition.f = DIRECTIONS[(currentIndex + 1) % DIRECTIONS.length]; // Turns right
-  }
-
-  move() {
+  public move() {
     if (!this.robotPosition) return;
     const move = MOVES[this.robotPosition.f];
     const newX = this.robotPosition.x + move.x;
     const newY = this.robotPosition.y + move.y;
 
-    if (this.isValidCell(newX, newY)) {
-      this.robotPosition.x = newX;
-      this.robotPosition.y = newY;
-      this.showTemporaryMessage(
-        'success',
-        'Robot Moved',
-        `Moved at: ${newX},${newY}`
-      );
-    }
+    this.robotPosition.x = newX;
+    this.robotPosition.y = newY;
+    this.showTemporaryMessage('success', 'Robot Moved', `Moved at: ${newX},${newY}`);
+    //TODO: ADD VALIDATION TO THE MOVE CALL; CHECK IF THE NEW POSITION IS VALID
+    // if (this.uiService.isValidCell(newX, newY)) {
+    // }
   }
+
+  public ngOnInit() {
+    this.grid = Array.from({ length: 5 }, (_, x) => Array.from({ length: 5 }, (_, y) => ({ x, y, active: false })));
+
+    this.uiService.statusMessage$.subscribe((statusMessage) => {
+      if (statusMessage) {
+        this.showTemporaryMessage(statusMessage.severity, statusMessage.summary, statusMessage.detail);
+      }
+    });
+
+    this.uiService.isValid$ = this.uiService.isValid$;
+  }
+
+  /**
+   * Places the robot at the specified coordinates on the grid facing north.
+   * Updates the robot's position if the specified cell is valid.
+   *
+   * @param x - The x-coordinate on the grid where the robot should be placed.
+   * @param y - The y-coordinate on the grid where the robot should be placed.
+   */
+  public placeRobot(x: number, y: number) {
+    this.robotPosition = { x, y, f: 'NORTH' }; // Always initialize robot position with facing direction 'NORTH'
+    this.uiService.updateRobotPosition(this.robotPosition); // Update UI with new robot position
+  }
+
+  public report() {
+    //TODO: naive to assume robotPosition is always set; use workflow/machine state to know when [report] is allowed/enabled
+    if (!this.robotPosition) return;
+    this.showTemporaryMessage('success', 'Robot Report', `${this.robotPosition.x},${this.robotPosition.y},${this.robotPosition.f}`);
+  }
+
+  public turnLeft() {
+    if (!this.robotPosition) return;
+    const currentIndex = DIRECTIONS.indexOf(this.robotPosition.f);
+    this.robotPosition.f = DIRECTIONS[(currentIndex + 3) % DIRECTIONS.length]; // Turns left
+  }
+
+  public turnRight() {
+    if (!this.robotPosition) return;
+    const currentIndex = DIRECTIONS.indexOf(this.robotPosition.f);
+    this.robotPosition.f = DIRECTIONS[(currentIndex + 1) % DIRECTIONS.length]; // Turns right
+  }
+
+  // #endregion Public Methods (8)
+
+  // #region Private Methods (1)
+
+  private showTemporaryMessage(severity: 'success' | 'error' | 'info', summary: string, detail: string) {
+    this.uiService.messageService.add({ severity, summary, detail });
+    setTimeout(() => {
+      this.uiService.messageService.clear();
+    }, 10000);
+  }
+
+  // #endregion Private Methods (1)
+
+  // #endregion Classes (1)
 }

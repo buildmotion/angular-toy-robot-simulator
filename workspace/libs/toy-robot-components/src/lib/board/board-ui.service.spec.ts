@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { RobotMachineService, RobotContext, RobotPosition, DIRECTIONS, Direction } from '@buildmotion/toy-robot-service';
+import { Direction, RobotContext, RobotMachineService, RobotPosition } from '@buildmotion/toy-robot-service';
 import { MessageService } from 'primeng/api';
 import { of, Subject } from 'rxjs';
 import { BoardUIService } from './board-ui.service'; // Update the path according to your file structure

@@ -114,7 +114,7 @@ export class RobotMachineService {
 
   private canMove(newX: number, newY: number, facing: Direction): boolean {
     if (facing === 'NORTH') return newY >= 0 && newY <= this.GRID_SIZE - 1;
-    if (facing === 'EAST') return newX >= 0 && newX < this.GRID_SIZE - 1;
+    if (facing === 'EAST') return newX >= 0 && newX <= this.GRID_SIZE - 1;
     if (facing === 'SOUTH') return newY >= 0 && newY < this.GRID_SIZE - 1;
     if (facing === 'WEST') return newX >= 0 && newX < this.GRID_SIZE - 1;
     return false; // In case facing does not match any expected direction

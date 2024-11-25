@@ -6,7 +6,7 @@
     "build:ui": "yarn nx run toy-robot-ui:build --skip-nx-cache=true --configuration=development",
     "serve:ui": "yarn nx run toy-robot-ui:serve --skip-nx-cache=true --configuration=development",
     "test:service": "nx run toy-robot-service:test --codeCoverage=true --coverageDirectory=.coverage --coverageReporters=html",
-    "test:all": "yarn nx run-many --target=test --skip-nx-cache=true --all=true --codeCoverage=true --coverageDirectory=.coverage --coverageReporters=html --verbose=true"
+    "test:all": "yarn nx run-many --target=test --skip-nx-cache=true --all=true --codeCoverage=true --coverageReporters=html --verbose=true"
   },
   "private": true,
   "dependencies": {

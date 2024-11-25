@@ -1,0 +1,12 @@
+<div class="robot-square" [class.robot-present]="isRobotHere">
+    <!-- would like to add an indicator of the current direction of the robot; using icons -->
+    <ng-container *ngIf="isRobotHere">
+        <i [ngSwitch]="direction">
+            <i *ngSwitchCase="'NORTH'" class="pi pi-arrow-up">&nbsp;<i *ngIf="isRobotHere" class="pi pi-android"></i></i>
+            <i *ngSwitchCase="'EAST'" class="pi pi-arrow-right">&nbsp;<i *ngIf="isRobotHere" class="pi pi-android"></i></i>
+            <i *ngSwitchCase="'SOUTH'" class="pi pi-arrow-down">&nbsp;<i *ngIf="isRobotHere" class="pi pi-android"></i></i>
+            <i *ngSwitchCase="'WEST'" class="pi pi-arrow-left">&nbsp;<i *ngIf="isRobotHere" class="pi pi-android"></i></i>
+            <i *ngSwitchDefault class="pi pi-question-circle">&nbsp;<i *ngIf="isRobotHere" class="pi pi-android"></i></i> <!-- default icon or error indicator -->
+        </i>
+    </ng-container>
+</div>

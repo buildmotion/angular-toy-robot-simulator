@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SquareComponent } from './square.component';
+import { SquareComponent } from '../square.component';
 
 describe('SquareComponent', () => {
   let component: SquareComponent;

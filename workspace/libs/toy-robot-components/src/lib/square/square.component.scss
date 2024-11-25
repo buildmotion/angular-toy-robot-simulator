@@ -1,0 +1,12 @@
+.robot-square {
+    position: relative;
+    
+    // Reduce space between squares
+     margin: 2px; // Adjust this value as needed
+
+    &.robot-present {
+        // background-color: lightblue;
+        text-align: center;
+        text-size-adjust: 200%;
+    }
+}

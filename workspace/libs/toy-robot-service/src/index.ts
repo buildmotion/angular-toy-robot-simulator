@@ -6,3 +6,4 @@ export { RobotPosition } from './lib/models/robot-position.model';
 export { RobotMachineService } from './lib/robot-machine.service';
 export { StatusMessage } from './lib/models/status-message.model';
 export { PlaceEvent } from './lib/models/place.event';
+export { Square } from './lib/models/square.model';

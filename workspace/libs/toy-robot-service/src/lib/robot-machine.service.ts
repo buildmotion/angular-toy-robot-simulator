@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { AnyActor, assign, createActor, setup } from 'xstate';
 import { PlaceEvent } from './models/place.event';
-import { Direction, RobotContext } from './models/robot-context.model';
+import { Direction, DIRECTIONS, MOVES, RobotContext } from './models/robot-context.model';
 import { StatusMessage } from './models/status-message.model';
+import { RobotPosition } from './models/robot-position.model';
 
 // #region Type aliases (1)
 
@@ -15,20 +16,23 @@ export type RobotEvent = { type: 'PLACE'; x: number; y: number; f: Direction } |
 
 @Injectable()
 export class RobotMachineService {
-  // #region Properties (5)
+  report(robotPosition: RobotContext) {
+    if (!robotPosition) return;
+    this.sendStatusMessage(new StatusMessage('success', 'Robot Report', `${robotPosition.x},${robotPosition.y},${robotPosition.f}`));
+  }
+  // #region Properties (8)
 
   private actor!: AnyActor;
-
   private isValidCellSubject: Subject<boolean> = new ReplaySubject<boolean>(1);
-  public isValidCell$: Observable<boolean> = this.isValidCellSubject.asObservable();
-
   private positionSubject: Subject<RobotContext> = new ReplaySubject<RobotContext>(1);
   private statusMessageSubject: ReplaySubject<StatusMessage> = new ReplaySubject<StatusMessage>(1);
 
+  public GRID_SIZE = 5;
+  public isValidCell$: Observable<boolean> = this.isValidCellSubject.asObservable();
   public position$: Observable<RobotContext> = this.positionSubject.asObservable();
   public statusMessage$: Observable<StatusMessage> = this.statusMessageSubject.asObservable();
 
-  // #endregion Properties (5)
+  // #endregion Properties (8)
 
   // #region Constructors (1)
 
@@ -38,7 +42,7 @@ export class RobotMachineService {
 
   // #endregion Constructors (1)
 
-  // #region Public Methods (3)
+  // #region Public Methods (7)
 
   public isValidCell(x: number, y: number): boolean {
     if (x >= 0 && x <= 4 && y >= 0 && y <= 4) {
@@ -54,12 +58,57 @@ export class RobotMachineService {
     }
   }
 
+  public move(robotPosition: RobotContext) {
+    if (!robotPosition) return;
+
+    const newMove = MOVES[robotPosition.f];
+    const newX = robotPosition.x + newMove.x;
+    const newY = robotPosition.y + newMove.y;
+
+    if (this.canMove(newX, newY, robotPosition.f)) {
+      {
+        robotPosition.x = newX;
+        robotPosition.y = newY;
+        this.positionSubject.next(robotPosition);
+
+        this.sendStatusMessage(new StatusMessage('success', 'Robot Moved', `Moved to: ${newX},${newY}.`));
+      }
+    }
+  }
+
+  public placeRobot(robotPosition: RobotPosition) {
+    if (this.canMove(robotPosition.x, robotPosition.y, robotPosition.f)) {
+      this.positionSubject.next(robotPosition);
+
+      this.sendStatusMessage(new StatusMessage('success', 'Robot Placed', `Placed at: ${robotPosition.x},${robotPosition.y}.`));
+    }
+  }
+
   public showState() {
     this.actor.subscribe((state) => {
       if (state) {
         console.log(this.actor.getSnapshot());
       }
     });
+  }
+
+  public turnLeft(robotPosition: RobotContext) {
+    if (!robotPosition) return;
+
+    const currentIndex = DIRECTIONS.indexOf(robotPosition.f);
+    robotPosition.f = DIRECTIONS[(currentIndex + 3) % DIRECTIONS.length]; // Turns left
+
+    this.positionSubject.next(robotPosition);
+    this.sendStatusMessage(new StatusMessage('success', 'Robot Turned Left', `Facing: ${robotPosition.f}.`));
+  }
+
+  public turnRight(robotPosition: RobotContext) {
+    if (!robotPosition) return;
+    const currentIndex = DIRECTIONS.indexOf(robotPosition.f);
+    robotPosition.f = DIRECTIONS[(currentIndex + 1) % DIRECTIONS.length]; // Turns right
+
+    this.positionSubject.next(robotPosition);
+    this.sendStatusMessage(new StatusMessage('success', 'Robot Turned Right', `Facing: ${robotPosition.f}.`));
   }
 
   /**
@@ -75,13 +124,21 @@ export class RobotMachineService {
     this.positionSubject.next(position);
   }
 
-  // #endregion Public Methods (3)
+  // #endregion Public Methods (7)
 
-  // #region Private Methods (5)
+  // #region Private Methods (6)
 
   private assignNewPosition(position: RobotContext) {
     console.log('assignNewPosition', position);
     this.positionSubject.next(position);
+  }
+
+  private canMove(newX: number, newY: number, facing: Direction): boolean {
+    if (facing === 'NORTH') return newY < this.GRID_SIZE - 1;
+    if (facing === 'EAST') return newX < this.GRID_SIZE - 1;
+    if (facing === 'SOUTH') return newY > 0;
+    if (facing === 'WEST') return newX > 0;
+    return false; // In case facing does not match any expected direction
   }
 
   /**
@@ -101,8 +158,9 @@ export class RobotMachineService {
       await this.initializeMachine(position);
     }
 
-    const event: PlaceEvent = { type: 'PLACE', x: position.x, y: position.y, f: position.f };
-    this.actor.send(event);
+    //TODO: ENABLE THE WORKFLOW TO HANDLE THE PLACE EVENT
+    // const event: PlaceEvent = { type: 'PLACE', x: position.x, y: position.y, f: position.f };
+    // this.actor.send(event);
   }
 
   private initialize() {
@@ -280,11 +338,10 @@ export class RobotMachineService {
   }
 
   private sendStatusMessage(message: StatusMessage) {
-    console.log('sendStatusMessage', message);
     this.statusMessageSubject.next(message);
   }
 
-  // #endregion Private Methods (5)
+  // #endregion Private Methods (6)
 }
 
 // #endregion Classes (1)

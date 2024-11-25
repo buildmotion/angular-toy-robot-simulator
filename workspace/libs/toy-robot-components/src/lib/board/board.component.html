@@ -15,6 +15,9 @@
      The terms are confusing; the button's change direction is the robot's direction, not the robot's left or right.
      Work with UI/UX to clarify the terms/behavior.
      Ex: Should "left" change direction and move the robot to the left?
+
+     Consider: Up | Down buttons to move the robot forward or backward.
+     update display logic based on current direction.
      -->
     <p-button label="Left" icon="pi pi-arrow-left" (click)="turnLeft()"></p-button>
     <p-button label="Move" (click)="move()">

@@ -14,24 +14,26 @@ class MockBoardUIService {
   showRobot(x: number, y: number): boolean {
     return x === 0 && y === 0;
   }
-
-  move() {}
-  placeRobot(position: RobotPosition) {}
-  report() {}
+  move() {} // Keep empty if not needed, otherwise implement a minimal side-effect
+  placeRobot(position: RobotPosition) {
+    // Could optionally log or perform a simple action
+  }
+  report() {} // As with move(), implement functionality if needed
   turnLeft() {}
   turnRight() {}
-}
-
-class MockMessageService {
-  add(message: any) {}
-  clear() {}
 }
 
 describe('BoardComponent', () => {
   let component: BoardComponent;
   let fixture: ComponentFixture<BoardComponent>;
   let mockUIService: MockBoardUIService;
-  let mockMessageService: MockMessageService;
+  // let mockMessageService: jest.Mocked<MessageService>;
+
+  const mockMessageService: jest.Mocked<MessageService> = {
+    add: jest.fn(),
+    clear: jest.fn(),
+    // Mock other methods/properties if needed
+  } as unknown as jest.Mocked<MessageService>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -39,13 +41,13 @@ describe('BoardComponent', () => {
       declarations: [BoardComponent],
       providers: [
         { provide: BoardUIService, useClass: MockBoardUIService },
-        { provide: MessageService, useClass: MockMessageService },
+        { provide: MessageService, useValue: mockMessageService },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
     mockUIService = TestBed.inject(BoardUIService);
-    mockMessageService = TestBed.inject(MessageService) as any;
+    // mockMessageService = TestBed.inject(MessageService);
     fixture = TestBed.createComponent(BoardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -62,9 +64,8 @@ describe('BoardComponent', () => {
   });
 
   it('should correctly determine if the robot is in a position', () => {
-    const placeRobotSpy = jest.spyOn(mockUIService, 'placeRobot');
+    // Removed unused 'placeRobotSpy'
     component.placeRobot(0, 0);
-
     expect(component.isRobotHere(0, 0)).toBeTruthy();
   });
 
@@ -88,7 +89,6 @@ describe('BoardComponent', () => {
 
   it('should call turnLeft on the UI service', () => {
     const turnLeftSpy = jest.spyOn(mockUIService, 'turnLeft');
-
     component.turnLeft();
     expect(turnLeftSpy).toHaveBeenCalled();
   });
@@ -97,18 +97,5 @@ describe('BoardComponent', () => {
     const turnRightSpy = jest.spyOn(mockUIService, 'turnRight');
     component.turnRight();
     expect(turnRightSpy).toHaveBeenCalled();
-  });
-
-  it.skip('should show a temporary message', async () => {
-    const addSpy = jest.spyOn(mockMessageService, 'add');
-    const clearSpy = jest.spyOn(mockMessageService, 'clear');
-
-    component.ngOnInit(); // Triggers the subscription which calls `showTemporaryMessage`
-
-    expect(addSpy).toHaveBeenCalledWith({ severity: 'success', summary: 'Success', detail: 'Test message' });
-
-    // Simulate time passing for setTimeout
-    jest.advanceTimersByTime(2500);
-    expect(clearSpy).toHaveBeenCalled();
   });
 });

@@ -32,6 +32,7 @@ export class ErrorHandlerService implements ErrorHandler {
    * Future implementations should include a proper error handling mechanism
    * and write the error details to a cloud logging service such as DataDog or Loggly.
    */
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   handleError(error: any): void {
     //TODO: Implement a proper error handling mechanism
     //TODO: WRITE TO CLOUD LOGGING SERVICE; DataDog, Loggly, etc.

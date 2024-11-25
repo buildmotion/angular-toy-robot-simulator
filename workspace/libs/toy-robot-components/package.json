@@ -3,7 +3,11 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^18.2.0",
-    "@angular/core": "^18.2.0"
+    "@angular/core": "^18.2.0",
+    "@buildmotion/toy-robot-service": "0.0.1",
+    "primeng": "^17.18.12",
+    "rxjs": "~7.8.0",
+    "@angular/router": "~18.2.0"
   },
   "sideEffects": false
 }

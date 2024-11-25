@@ -1,114 +1,90 @@
 import { Component, OnInit } from '@angular/core';
-import { Message, MessageService } from 'primeng/api';
+import { Direction, Square } from '@buildmotion/toy-robot-service';
+import { Message } from 'primeng/api';
+import { BoardUIService } from './board-ui.service';
 
-interface Cell {
-  x: number;
-  y: number;
-  active: boolean;
-}
-
-type Direction = 'NORTH' | 'EAST' | 'SOUTH' | 'WEST';
-
-// Ordered directions for circular rotation
-const DIRECTIONS: Direction[] = ['NORTH', 'EAST', 'SOUTH', 'WEST'];
-
-// Moves mapped to directions
-const MOVES = {
-  NORTH: { x: 0, y: 1 },
-  EAST: { x: 1, y: 0 },
-  SOUTH: { x: 0, y: -1 },
-  WEST: { x: -1, y: 0 },
-} as const;
-
+/**
+ * Component representing the robot board.
+ * Handles the initialization and interaction with the robot on the grid.
+ */
 @Component({
   selector: 'robot-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
 })
 export class BoardComponent implements OnInit {
-  messages!: Message[];
-  robotPosition!: { x: number; y: number; f: Direction };
-  grid!: Cell[][];
+  // #region Properties (3)
 
-  constructor(private messageService: MessageService) {}
+  public direction!: string;
+  public grid!: Square[][];
+  public messages!: Message[];
 
-  ngOnInit() {
-    this.grid = Array.from({ length: 5 }, (_, x) =>
-      Array.from({ length: 5 }, (_, y) => ({ x, y, active: false }))
-    );
+  // #endregion Properties (3)
+
+  // #region Constructors (1)
+
+  constructor(private uiService: BoardUIService) {}
+
+  // #endregion Constructors (1)
+
+  // #region Public Methods (8)
+
+  public isRobotHere(x: number, y: number): boolean {
+    return this.uiService.showRobot(x, y);
   }
 
-  isValidCell(x: number, y: number): boolean {
-    return x >= 0 && x <= 4 && y >= 0 && y <= 4;
+  public move() {
+    this.uiService.move();
   }
 
-  placeRobot(x: number, y: number) {
-    if (this.isValidCell(x, y)) {
-      this.robotPosition = { x, y, f: 'NORTH' };
-      this.showTemporaryMessage(
-        'success',
-        'Robot Placed',
-        `Placed at: ${x},${y}`
-      );
-    }
+  public ngOnInit() {
+    this.grid = Array.from({ length: 5 }, (_, x) => Array.from({ length: 5 }, (_, y) => ({ x, y, active: false })));
+
+    this.uiService.statusMessage$.subscribe((statusMessage) => {
+      if (statusMessage) {
+        this.showTemporaryMessage(statusMessage.severity, statusMessage.summary, statusMessage.detail);
+      }
+    });
+
+    this.uiService.position$.subscribe((robotPosition) => {
+      this.direction = robotPosition.f;
+    });
   }
 
-  private showTemporaryMessage(
-    severity: 'success' | 'error',
-    summary: string,
-    detail: string
-  ) {
-    this.messageService.add({ severity, summary, detail });
+  /**
+   * Places the robot at the specified coordinates on the grid facing north.
+   * Updates the robot's position if the specified cell is valid.
+   *
+   * @param x - The x-coordinate on the grid where the robot should be placed.
+   * @param y - The y-coordinate on the grid where the robot should be placed.
+   */
+  public placeRobot(x: number, y: number) {
+    const robotPosition = { x, y, f: 'NORTH' as Direction }; // Always initialize robot position with facing direction 'NORTH'
+    this.uiService.placeRobot(robotPosition); // Update UI with new robot position
+  }
+
+  public report() {
+    this.uiService.report();
+  }
+
+  public turnLeft() {
+    this.uiService.turnLeft();
+  }
+
+  public turnRight() {
+    this.uiService.turnRight();
+  }
+
+  // #endregion Public Methods (8)
+
+  // #region Private Methods (1)
+
+  private showTemporaryMessage(severity: 'success' | 'error' | 'info', summary: string, detail: string) {
+    this.uiService.messageService.add({ severity, summary, detail });
     setTimeout(() => {
-      this.messageService.clear();
-    }, 3000);
+      this.uiService.messageService.clear();
+    }, 2500);
   }
 
-  getRobotDirectionStyle(): any {
-    // Implement your logic for robot direction style transformation
-    return {}; // Dummy return for now
-  }
-
-  isRobotHere(x: number, y: number): boolean {
-    if (!this.robotPosition) return false;
-    return this.robotPosition.x === x && this.robotPosition.y === y;
-  }
-
-  report() {
-    if (!this.robotPosition) return;
-    this.showTemporaryMessage(
-      'success',
-      'Robot Report',
-      `${this.robotPosition.x},${this.robotPosition.y},${this.robotPosition.f}`
-    );
-  }
-
-  turnLeft() {
-    if (!this.robotPosition) return;
-    const currentIndex = DIRECTIONS.indexOf(this.robotPosition.f);
-    this.robotPosition.f = DIRECTIONS[(currentIndex + 3) % DIRECTIONS.length]; // Turns left
-  }
-
-  turnRight() {
-    if (!this.robotPosition) return;
-    const currentIndex = DIRECTIONS.indexOf(this.robotPosition.f);
-    this.robotPosition.f = DIRECTIONS[(currentIndex + 1) % DIRECTIONS.length]; // Turns right
-  }
-
-  move() {
-    if (!this.robotPosition) return;
-    const move = MOVES[this.robotPosition.f];
-    const newX = this.robotPosition.x + move.x;
-    const newY = this.robotPosition.y + move.y;
-
-    if (this.isValidCell(newX, newY)) {
-      this.robotPosition.x = newX;
-      this.robotPosition.y = newY;
-      this.showTemporaryMessage(
-        'success',
-        'Robot Moved',
-        `Moved at: ${newX},${newY}`
-      );
-    }
-  }
+  // #endregion Private Methods (1)
 }

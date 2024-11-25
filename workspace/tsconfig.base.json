@@ -15,9 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@buildmotion/robot-toy-components": [
-        "libs/toy-robot-components/src/index.ts"
-      ],
+      "@buildmotion/robot-toy-components": ["libs/toy-robot-components/src/index.ts"],
       "@buildmotion/toy-robot-service": ["libs/toy-robot-service/src/index.ts"]
     }
   },

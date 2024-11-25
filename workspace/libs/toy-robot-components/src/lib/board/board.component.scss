@@ -1,14 +1,28 @@
 .robot-cell {
-    background-color: lightblue;
-    text-align: center;
+  // background-color: lightblue;
+  text-align: center;
+  // display: flex;
+  border: 1px solid rgba(169, 169, 169, 0.5); // More muted line
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); // Drop shadow for depth
+    background-color: #f4f4f4; // Optional: a light background to enhance bevel effect
+    border-radius: 5px; // For beveled corners
+
+  // Add PrimeNG icon
+  &::before {
+    content: '\f17b';
+    font-family: 'primeicons';
+    font-size: 48px;
+    color: #007ad9; /* Adjust color as needed */
+  }
 }
 
 .pi-robot {
-    font-size: 2rem;
-    color: #444;
+  font-size: 4rem;
+  color: #444;
 }
 
 .robot-cell i {
-    transition: transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out;
 }
-

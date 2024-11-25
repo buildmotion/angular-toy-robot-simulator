@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Direction, Square } from '@buildmotion/toy-robot-service';
 import { Message } from 'primeng/api';
-import { BoardUIService } from './board-ui.service.service';
+import { BoardUIService } from './board-ui.service';
 
 /**
  * Component representing the robot board.

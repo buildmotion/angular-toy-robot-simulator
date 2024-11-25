@@ -9,10 +9,8 @@ import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 export class BoardUIService {
   // #region Properties (4)
 
-  private isValidSubject = new BehaviorSubject<boolean>(false);
   private positionSubject = new ReplaySubject<RobotContext>(1);
 
-  isValid$ = this.isValidSubject.asObservable();
   public robotPosition!: RobotContext;
   public position$ = this.positionSubject.asObservable();
   statusMessage$!: Observable<StatusMessage>;
@@ -28,10 +26,6 @@ export class BoardUIService {
   // #endregion Constructors (1)
 
   // #region Public Methods (7)
-
-  public isValidCell(x: number, y: number) {
-    this.robotService.isValidCell(x, y);
-  }
 
   public move() {
     this.robotService.move(this.robotPosition);
@@ -74,10 +68,6 @@ export class BoardUIService {
     });
 
     this.statusMessage$ = this.robotService.statusMessage$;
-
-    this.robotService.isValidCell$.subscribe((isValid) => {
-      this.isValidSubject.next(isValid);
-    });
   }
 
   // #endregion Private Methods (1)

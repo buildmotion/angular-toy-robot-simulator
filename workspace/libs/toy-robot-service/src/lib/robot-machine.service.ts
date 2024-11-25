@@ -23,12 +23,10 @@ export class RobotMachineService {
   // #region Properties (8)
 
   private actor!: AnyActor;
-  private isValidCellSubject: Subject<boolean> = new ReplaySubject<boolean>(1);
   private positionSubject: Subject<RobotContext> = new ReplaySubject<RobotContext>(1);
   private statusMessageSubject: ReplaySubject<StatusMessage> = new ReplaySubject<StatusMessage>(1);
 
   public GRID_SIZE = 5;
-  public isValidCell$: Observable<boolean> = this.isValidCellSubject.asObservable();
   public position$: Observable<RobotContext> = this.positionSubject.asObservable();
   public statusMessage$: Observable<StatusMessage> = this.statusMessageSubject.asObservable();
 
@@ -43,20 +41,6 @@ export class RobotMachineService {
   // #endregion Constructors (1)
 
   // #region Public Methods (7)
-
-  public isValidCell(x: number, y: number): boolean {
-    if (x >= 0 && x <= 4 && y >= 0 && y <= 4) {
-      // update the isValidCellSubject; indicates that the cell is valid for a move | place action
-      this.isValidCellSubject.next(true);
-      return true;
-
-      // // update/set the position
-      // const position: RobotContext = { x, y, f: 'NORTH' };
-      // this.positionSubject.next(position);
-    } else {
-      return false;
-    }
-  }
 
   public move(robotPosition: RobotContext) {
     if (!robotPosition) return;
@@ -73,6 +57,9 @@ export class RobotMachineService {
 
         this.sendStatusMessage(new StatusMessage('success', 'Robot Moved', `Moved to: ${newX},${newY}.`));
       }
+    } else {
+      this.sendStatusMessage(new StatusMessage('error', 'Invalid Move', `Stay on the board - choose a different move.`));
+      throw new Error(`Invalid Move: Stay on the board - choose a different move. Current Position: x=${robotPosition.x}, y=${robotPosition.y}, f=${robotPosition.f}`);
     }
   }
 
@@ -82,14 +69,6 @@ export class RobotMachineService {
 
       this.sendStatusMessage(new StatusMessage('success', 'Robot Placed', `Placed at: ${robotPosition.x},${robotPosition.y}.`));
     }
-  }
-
-  public showState() {
-    this.actor.subscribe((state) => {
-      if (state) {
-        console.log(this.actor.getSnapshot());
-      }
-    });
   }
 
   public turnLeft(robotPosition: RobotContext) {
@@ -134,10 +113,10 @@ export class RobotMachineService {
   }
 
   private canMove(newX: number, newY: number, facing: Direction): boolean {
-    if (facing === 'NORTH') return newY < this.GRID_SIZE - 1;
-    if (facing === 'EAST') return newX < this.GRID_SIZE - 1;
-    if (facing === 'SOUTH') return newY > 0;
-    if (facing === 'WEST') return newX > 0;
+    if (facing === 'NORTH') return newY >= 0 && newY <= this.GRID_SIZE - 1;
+    if (facing === 'EAST') return newX >= 0 && newX < this.GRID_SIZE - 1;
+    if (facing === 'SOUTH') return newY >= 0 && newY < this.GRID_SIZE - 1;
+    if (facing === 'WEST') return newX >= 0 && newX < this.GRID_SIZE - 1;
     return false; // In case facing does not match any expected direction
   }
 

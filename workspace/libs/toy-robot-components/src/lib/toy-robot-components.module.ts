@@ -9,7 +9,7 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { MessagesModule } from 'primeng/messages';
 import { TableModule } from 'primeng/table';
-import { BoardUIService } from './board/board-ui.service.service';
+import { BoardUIService } from './board/board-ui.service';
 import { SquareComponent } from './square/square.component';
 
 @NgModule({

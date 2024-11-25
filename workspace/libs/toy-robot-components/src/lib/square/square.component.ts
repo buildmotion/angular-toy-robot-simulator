@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { Direction } from '@buildmotion/toy-robot-service';
 
 @Component({
   selector: 'robot-square',

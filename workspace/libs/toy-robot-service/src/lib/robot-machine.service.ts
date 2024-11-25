@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, ReplaySubject, Subject } from 'rxjs';
-import { AnyActor, assign, createActor, setup } from 'xstate';
-import { PlaceEvent } from './models/place.event';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { AnyActor, createActor, setup } from 'xstate';
 import { Direction, DIRECTIONS, MOVES, RobotContext } from './models/robot-context.model';
-import { StatusMessage } from './models/status-message.model';
 import { RobotPosition } from './models/robot-position.model';
+import { StatusMessage } from './models/status-message.model';
 
 // #region Type aliases (1)
 
@@ -155,11 +154,10 @@ export class RobotMachineService {
         input: {} as RobotContext,
       },
       guards: {
-        isValidPosition: (context, event) => {
-          // const { x, y, f } = context;
-          // return x >= 0 && x <= 4 && y >= 0 && y <= 4;
-          return true;
-        },
+        // isValidPosition: (context, event) => {
+        // const { x, y, f } = context;
+        // return x >= 0 && x <= 4 && y >= 0 && y <= 4;
+        // return true;
       },
       actions: {
         /**

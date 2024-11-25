@@ -1,5 +1,4 @@
 <div class="robot-square" [class.robot-present]="isRobotHere">
-    <!-- would like to add an indicator of the current direction of the robot; using icons -->
     <ng-container *ngIf="isRobotHere">
         <i [ngSwitch]="direction">
             <i *ngSwitchCase="'NORTH'" class="pi pi-arrow-up">&nbsp;<i *ngIf="isRobotHere" class="pi pi-android"></i></i>

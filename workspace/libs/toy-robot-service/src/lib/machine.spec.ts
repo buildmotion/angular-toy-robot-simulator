@@ -25,65 +25,65 @@ const workflow = setup({
   actions: {},
 }).createMachine({
   id: 'Lukka',
-  initial: 'idle',
+  initial: STATES.IDLE,
   states: {
-    [STATES.IDLE as StateType]: {
+    [STATES.IDLE]: {
       on: {
         PLAY: {
-          target: 'playing',
+          target: STATES.PLAYING,
         },
         EAT: {
-          target: 'eating',
+          target: STATES.EATING,
         },
       },
     },
-    [STATES.EATING as StateType]: {},
-    [STATES.PLAYING as StateType]: {
-      initial: 'mudding',
+    [STATES.EATING]: {},
+    [STATES.PLAYING]: {
+      initial: STATES.MUDDING,
       states: {
-        mudding: {
+        [STATES.MUDDING]: {
           on: {
             FETCH: {
-              target: 'fetching',
+              target: STATES.FETCHING,
             },
             CHASE: {
-              target: 'chasing',
+              target: STATES.CHASING,
             },
             STOP: {
-              target: '#Lukka.idle',
+              target: `#Lukka.${STATES.IDLE}`,
             },
           },
         },
-        fetching: {
+        [STATES.FETCHING]: {
           on: {
             MUD: {
-              target: 'mudding',
+              target: STATES.MUDDING,
             },
             CHASE: {
-              target: 'chasing',
+              target: STATES.CHASING,
             },
             STOP: {
-              target: '#Lukka.idle',
+              target: `#Lukka.${STATES.IDLE}`,
             },
           },
         },
-        chasing: {
+        [STATES.CHASING]: {
           on: {
             MUD: {
-              target: 'mudding',
+              target: STATES.MUDDING,
             },
             FETCH: {
-              target: 'fetching',
+              target: STATES.FETCHING,
             },
             STOP: {
-              target: '#Lukka.idle',
+              target: `#Lukka.${STATES.IDLE}`,
             },
           },
         },
       },
       on: {
         STOP: {
-          target: 'idle',
+          target: STATES.IDLE,
         },
       },
     },
@@ -105,22 +105,26 @@ describe('Lukka Machine', () => {
   describe('Initial State', () => {
     it('should start in the [idle] state when workflow starts/initializes', () => {
       expect(actor.getSnapshot().value).toEqual('idle');
+      expect(actor.getSnapshot().value).toEqual(STATES.IDLE);
     });
 
     it('should transition to [playing] state when PLAY event is triggered', () => {
       actor.send({ type: 'PLAY' });
       expect(actor.getSnapshot().value).toEqual({ playing: 'mudding' });
+      expect(actor.getSnapshot().value).toEqual({ [STATES.PLAYING]: STATES.MUDDING });
     });
 
     it('should transition to [eating] state when EAT event is triggered', () => {
       actor.send({ type: 'EAT' });
       expect(actor.getSnapshot().value).toEqual('eating');
+      expect(actor.getSnapshot().value).toEqual(STATES.EATING);
     });
 
     it('should transition to [idle] state when STOP event is triggered', () => {
       actor.send({ type: 'PLAY' });
       actor.send({ type: 'STOP' });
       expect(actor.getSnapshot().value).toEqual('idle');
+      expect(actor.getSnapshot().value).toEqual(STATES.IDLE);
     });
   });
 
@@ -131,21 +135,21 @@ describe('Lukka Machine', () => {
 
     it('should start in [mudding] sub-state initially', () => {
       expect(actor.getSnapshot().value).toEqual({
-        playing: 'mudding',
+        [STATES.PLAYING]: STATES.MUDDING,
       });
     });
 
     it('should transition to [fetching] from [mudding] when FETCH event is triggered', () => {
       actor.send({ type: 'FETCH' });
       expect(actor.getSnapshot().value).toEqual({
-        playing: 'fetching',
+        [STATES.PLAYING]: STATES.FETCHING,
       });
     });
 
     it('should transition to [chasing] from [mudding] when CHASE event is triggered', () => {
       actor.send({ type: 'CHASE' });
       expect(actor.getSnapshot().value).toEqual({
-        playing: 'chasing',
+        [STATES.PLAYING]: STATES.CHASING,
       });
     });
 
@@ -153,7 +157,7 @@ describe('Lukka Machine', () => {
       actor.send({ type: 'FETCH' });
       actor.send({ type: 'MUD' });
       expect(actor.getSnapshot().value).toEqual({
-        playing: 'mudding',
+        [STATES.PLAYING]: STATES.MUDDING,
       });
     });
 
@@ -161,7 +165,7 @@ describe('Lukka Machine', () => {
       actor.send({ type: 'FETCH' });
       actor.send({ type: 'CHASE' });
       expect(actor.getSnapshot().value).toEqual({
-        playing: 'chasing',
+        [STATES.PLAYING]: STATES.CHASING,
       });
     });
 
@@ -169,7 +173,7 @@ describe('Lukka Machine', () => {
       actor.send({ type: 'CHASE' });
       actor.send({ type: 'MUD' });
       expect(actor.getSnapshot().value).toEqual({
-        playing: 'mudding',
+        [STATES.PLAYING]: STATES.MUDDING,
       });
     });
 
@@ -177,7 +181,7 @@ describe('Lukka Machine', () => {
       actor.send({ type: 'CHASE' });
       actor.send({ type: 'FETCH' });
       expect(actor.getSnapshot().value).toEqual({
-        playing: 'fetching',
+        [STATES.PLAYING]: STATES.FETCHING,
       });
     });
   });

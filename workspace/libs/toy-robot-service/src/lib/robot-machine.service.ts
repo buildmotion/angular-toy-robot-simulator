@@ -4,6 +4,7 @@ import { AnyActor, createActor, setup } from 'xstate';
 import { Direction, DIRECTIONS, MOVES, RobotContext } from './models/robot-context.model';
 import { RobotPosition } from './models/robot-position.model';
 import { StatusMessage } from './models/status-message.model';
+import { Machine } from './machine/machine';
 
 // #region Type aliases (1)
 
@@ -15,11 +16,7 @@ export type RobotEvent = { type: 'PLACE'; x: number; y: number; f: Direction } |
 
 @Injectable()
 export class RobotMachineService {
-  report(robotPosition: RobotContext) {
-    if (!robotPosition) return;
-    this.sendStatusMessage(new StatusMessage('success', 'Robot Report', `${robotPosition.x},${robotPosition.y},${robotPosition.f}`));
-  }
-  // #region Properties (8)
+  // #region Properties (6)
 
   private actor!: AnyActor;
   private positionSubject: Subject<RobotContext> = new ReplaySubject<RobotContext>(1);
@@ -29,11 +26,11 @@ export class RobotMachineService {
   public position$: Observable<RobotContext> = this.positionSubject.asObservable();
   public statusMessage$: Observable<StatusMessage> = this.statusMessageSubject.asObservable();
 
-  // #endregion Properties (8)
+  // #endregion Properties (6)
 
   // #region Constructors (1)
 
-  constructor() {
+  constructor(private machine: Machine) {
     this.initialize();
   }
 
@@ -70,6 +67,11 @@ export class RobotMachineService {
     }
   }
 
+  public report(robotPosition: RobotContext) {
+    if (!robotPosition) return;
+    this.sendStatusMessage(new StatusMessage('success', 'Robot Report', `${robotPosition.x},${robotPosition.y},${robotPosition.f}`));
+  }
+
   public turnLeft(robotPosition: RobotContext) {
     if (!robotPosition) return;
 
@@ -104,7 +106,7 @@ export class RobotMachineService {
 
   // #endregion Public Methods (7)
 
-  // #region Private Methods (6)
+  // #region Private Methods (5)
 
   private assignNewPosition(position: RobotContext) {
     console.log('assignNewPosition', position);
@@ -132,20 +134,8 @@ export class RobotMachineService {
    *                   which includes the x and y coordinates, and the facing direction (f).
    */
   private async handlePositionChange(position: RobotContext) {
-    if (!this.actor) {
-      await this.initializeMachine(position);
-    }
-
-    //TODO: ENABLE THE WORKFLOW TO HANDLE THE PLACE EVENT
     // const event: PlaceEvent = { type: 'PLACE', x: position.x, y: position.y, f: position.f };
     // this.actor.send(event);
-  }
-  initializeMachine(position: RobotContext) {
-    if (position) {
-      //TODO: CREATE THE MACHINE SETUP AND CONFIGURATION;
-    } else {
-      throw new Error('Invalid Position: Robot position must be provided to initialize the machine.');
-    }
   }
 
   private initialize() {
@@ -158,7 +148,7 @@ export class RobotMachineService {
     this.statusMessageSubject.next(message);
   }
 
-  // #endregion Private Methods (6)
+  // #endregion Private Methods (5)
 }
 
 // #endregion Classes (1)

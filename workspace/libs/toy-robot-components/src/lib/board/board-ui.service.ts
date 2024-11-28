@@ -23,10 +23,12 @@ export class BoardUIService {
    * Observable that streams updates of the robot's position and context.
    */
   public position$ = this.positionSubject.asObservable();
+
   /**
    * The latest known position and context of the robot, including the direction it is facing.
    */
   public robotPosition!: RobotContext;
+
   /**
    * Observable that streams status messages from the robot service.
    */

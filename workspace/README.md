@@ -27,16 +27,17 @@ This had the following libraries:
 ## Testing the Workspace
 
 - Run the tests.
-  - `yarn test:all`: will run all of the tests in the workspace for each project. You can view the results in the `.coverage` folder. 
+  - `yarn test:all`: will run all of the tests in the workspace for each project. You can view the results in the `.coverage` folder.
 
-> See: 
+> See:
+>
 > - [UI Components Library](./coverage/libs/toy-robot-components/index.html)
 > - [Toy Robot Service Library](./coverage/libs/toy-robot-service/index.html)
 > - [Robot Simulator Web App](./coverage/apps/toy-robot-ui/index.html)
 
 ## Setup and Configuration
 
-The Nx CLI was used to create the application and library projects. 
+The Nx CLI was used to create the application and library projects.
 
 > See: [Setup](./docs/setup.md).
 
@@ -51,7 +52,6 @@ The Nx CLI was used to create the application and library projects.
 ### Finish your CI setup
 
 [Click here to finish setting up your workspace!](https://cloud.nx.app/connect/LaFVDXnVFZ)
-
 
 ### Run tasks
 
@@ -76,6 +76,7 @@ These targets are either [inferred automatically](https://nx.dev/concepts/inferr
 While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
 
 To install a new plugin you can use the `nx add` command. Here's an example of adding the React plugin:
+
 ```sh
 npx nx add @nx/react
 ```
@@ -93,7 +94,6 @@ npx nx g @nx/react:lib some-lib
 You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
 
 [Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
 
 [Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 
@@ -113,6 +113,7 @@ Learn more:
 - [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 
 And join the Nx community:
+
 - [Discord](https://go.nx.dev/community)
 - [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
 - [Our Youtube channel](https://www.youtube.com/@nxdevtools)

@@ -4,6 +4,7 @@ import { AnyActor, createActor, setup } from 'xstate';
 import { Direction, DIRECTIONS, MOVES, RobotContext } from './models/robot-context.model';
 import { RobotPosition } from './models/robot-position.model';
 import { StatusMessage } from './models/status-message.model';
+import { Machine } from './machine/machine';
 
 // #region Type aliases (1)
 
@@ -15,11 +16,7 @@ export type RobotEvent = { type: 'PLACE'; x: number; y: number; f: Direction } |
 
 @Injectable()
 export class RobotMachineService {
-  report(robotPosition: RobotContext) {
-    if (!robotPosition) return;
-    this.sendStatusMessage(new StatusMessage('success', 'Robot Report', `${robotPosition.x},${robotPosition.y},${robotPosition.f}`));
-  }
-  // #region Properties (8)
+  // #region Properties (6)
 
   private actor!: AnyActor;
   private positionSubject: Subject<RobotContext> = new ReplaySubject<RobotContext>(1);
@@ -29,11 +26,11 @@ export class RobotMachineService {
   public position$: Observable<RobotContext> = this.positionSubject.asObservable();
   public statusMessage$: Observable<StatusMessage> = this.statusMessageSubject.asObservable();
 
-  // #endregion Properties (8)
+  // #endregion Properties (6)
 
   // #region Constructors (1)
 
-  constructor() {
+  constructor(private machine: Machine) {
     this.initialize();
   }
 
@@ -70,6 +67,11 @@ export class RobotMachineService {
     }
   }
 
+  public report(robotPosition: RobotContext) {
+    if (!robotPosition) return;
+    this.sendStatusMessage(new StatusMessage('success', 'Robot Report', `${robotPosition.x},${robotPosition.y},${robotPosition.f}`));
+  }
+
   public turnLeft(robotPosition: RobotContext) {
     if (!robotPosition) return;
 
@@ -104,7 +106,7 @@ export class RobotMachineService {
 
   // #endregion Public Methods (7)
 
-  // #region Private Methods (6)
+  // #region Private Methods (5)
 
   private assignNewPosition(position: RobotContext) {
     console.log('assignNewPosition', position);
@@ -132,11 +134,6 @@ export class RobotMachineService {
    *                   which includes the x and y coordinates, and the facing direction (f).
    */
   private async handlePositionChange(position: RobotContext) {
-    if (!this.actor) {
-      await this.initializeMachine(position);
-    }
-
-    //TODO: ENABLE THE WORKFLOW TO HANDLE THE PLACE EVENT
     // const event: PlaceEvent = { type: 'PLACE', x: position.x, y: position.y, f: position.f };
     // this.actor.send(event);
   }
@@ -147,178 +144,11 @@ export class RobotMachineService {
     });
   }
 
-  private async initializeMachine(robotContext: RobotContext) {
-    const wf = setup({
-      types: {
-        context: {} as RobotContext,
-        input: {} as RobotContext,
-      },
-      guards: {
-        // isValidPosition: (context, event) => {
-        // const { x, y, f } = context;
-        // return x >= 0 && x <= 4 && y >= 0 && y <= 4;
-        // return true;
-      },
-      actions: {
-        /**
-         * Assigns a new position to the robot.
-         *
-         * This action updates the robot's current position to the specified
-         * position provided in the parameters. It uses the `assignNewPosition`
-         * method to propagate this change to the relevant observers.
-         *
-         * @param _ - The context parameter, which is not used in this action.
-         * @param params - An object containing the new position of the robot
-         *                 as a RobotContext. This includes the x and y coordinates
-         *                 and the facing direction (f).
-         */
-        assignNewPosition: (_, params: { position: RobotContext }) => {
-          this.assignNewPosition(params.position);
-        },
-        /**
-         * Reports the current status message of the robot.
-         *
-         * This action sends a status message, encapsulated in a `StatusMessage` object,
-         * to all observers via the `statusMessageSubject`.
-         *
-         * @param _ - The context parameter, which is not used in this action.
-         * @param params - An object containing a `message` property which is an instance of `StatusMessage`.
-         *                 This message provides information about the current status of the robot,
-         *                 such as success, idle, or placed status, along with additional description.
-         */
-        reportStatus: (_, params: { message: StatusMessage }) => {
-          this.sendStatusMessage(params.message);
-        },
-      },
-    }).createMachine({
-      id: 'robotWorkflow',
-      initial: 'idle',
-      context: () => ({
-        x: robotContext.x,
-        y: robotContext.y,
-        f: robotContext.f,
-      }),
-      states: {
-        idle: {
-          entry: [
-            {
-              type: 'reportStatus',
-              params: {
-                message: new StatusMessage('success', 'Robot is idle.', 'Robot is waiting for commands.'),
-              },
-            },
-          ],
-          on: {
-            PLACE: {
-              target: 'placed',
-            },
-          },
-        },
-        placed: {
-          entry: [
-            {
-              type: 'reportStatus',
-              params: { context: robotContext, message: new StatusMessage('success', 'Robot is placed.', `Placed at: ${robotContext.x},${robotContext.y}.`) },
-            },
-            // {
-            //   type: 'assignNewPosition',
-            //   params: { position: robotContext },
-            // },
-          ],
-          on: {
-            MOVE: {},
-            PLACE: {
-              target: 'placed',
-              reenter: true,
-              actions: [
-                {
-                  type: 'assignNewPosition',
-                  params: { position: robotContext },
-                },
-              ],
-            },
-          },
-        },
-      },
-    });
-
-    this.actor = createActor(wf, { ...robotContext, input: robotContext }).start();
-
-    // const machineConfig = setup({
-    //   types: {
-    //     context: {} as RobotContext,
-    //     input: {} as RobotContext,
-    //   },
-    //   guards: {
-    //     isValidPosition: (context, event) => {
-    //       const { x, y } = event as any;
-    //       return x >= 0 && y >= 0;
-    //     },
-    //     canMove: (context) => {
-    //       const { x, y, f } = context;
-    //       switch (f) {
-    //         case 'NORTH':
-    //           return y < 5;
-    //         case 'EAST':
-    //           return x < 5;
-    //         case 'SOUTH':
-    //           return y > 0;
-    //         case 'WEST':
-    //           return x > 0;
-    //         default:
-    //           return false;
-    //       }
-    //     },
-    //   },
-    //   actions: {},
-    // }).createMachine({
-    //   id: 'robot',
-    //   initial: 'idle',
-    //   context: () => ({
-    //     x: robotContext.x,
-    //     y: robotContext.y,
-    //     f: robotContext.f,
-    //   }),
-    //   states: {
-    //     idle: {
-    //       on: {
-    //         PLACE: {
-    //           target: 'placed',
-    //           cond: 'isValidPosition',
-    //           actions: 'assignNewPosition',
-    //         },
-    //       },
-    //     },
-    //     placed: {
-    //       on: {
-    //         // MOVE: {
-    //         //   actions: 'moveRobot',
-    //         //   cond: 'canMove',
-    //         // },
-    //         // LEFT: {
-    //         //   actions: 'turnLeft',
-    //         // },
-    //         // RIGHT: {
-    //         //   actions: 'turnRight',
-    //         // },
-    //         PLACE: {
-    //           actions: 'assignNewPosition',
-    //           cond: 'isValidPosition',
-    //         },
-    //         REPORT: {
-    //           actions: 'reportStatus',
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
-  }
-
   private sendStatusMessage(message: StatusMessage) {
     this.statusMessageSubject.next(message);
   }
 
-  // #endregion Private Methods (6)
+  // #endregion Private Methods (5)
 }
 
 // #endregion Classes (1)

@@ -33,9 +33,9 @@ This had the following libraries:
 
 > See:
 >
-> - [UI Components Library](./coverage/libs/toy-robot-components/index.html)
-> - [Toy Robot Service Library](./coverage/libs/toy-robot-service/index.html)
-> - [Robot Simulator Web App](./coverage/apps/toy-robot-ui/index.html)
+> - [UI Components Library](./workspace/coverage/libs/toy-robot-components/index.html)
+> - [Toy Robot Service Library](./workspace/coverage/libs/toy-robot-service/index.html)
+> - [Robot Simulator Web App](./workspace/coverage/apps/)
 
 ## Setup and Configuration
 

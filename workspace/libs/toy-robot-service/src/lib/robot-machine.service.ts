@@ -5,6 +5,7 @@ import { Direction, DIRECTIONS, MOVES, RobotContext } from './models/robot-conte
 import { RobotPosition } from './models/robot-position.model';
 import { StatusMessage } from './models/status-message.model';
 import { Machine } from './machine/machine';
+import { RobotPositionEvent } from './machine/workflow';
 
 // #region Type aliases (1)
 
@@ -18,7 +19,6 @@ export type RobotEvent = { type: 'PLACE'; x: number; y: number; f: Direction } |
 export class RobotMachineService {
   // #region Properties (6)
 
-  private actor!: AnyActor;
   private positionSubject: Subject<RobotContext> = new ReplaySubject<RobotContext>(1);
   private statusMessageSubject: ReplaySubject<StatusMessage> = new ReplaySubject<StatusMessage>(1);
 
@@ -60,6 +60,12 @@ export class RobotMachineService {
   }
 
   public placeRobot(robotPosition: RobotPosition) {
+    // this.machine.actor.send({ type: 'PLACE', position: { x: robotPosition.x, y: robotPosition.y, f: robotPosition.f } });
+    const event: RobotPositionEvent = {
+      type: 'PLACE',
+      position: robotPosition,
+    };
+    this.machine.actor.send(event);
     if (this.canMove(robotPosition.x, robotPosition.y, robotPosition.f)) {
       this.positionSubject.next(robotPosition);
 
@@ -141,6 +147,10 @@ export class RobotMachineService {
   private initialize() {
     this.position$.subscribe((position) => {
       this.handlePositionChange(position);
+    });
+
+    this.machine.actor.subscribe((state) => {
+      console.log('Machine State:', state);
     });
   }
 

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { LoggerService } from '@buildmotion/logger';
 import { RobotContext, RobotMachineService, RobotPosition, StatusMessage } from '@buildmotion/toy-robot-service';
 import { MessageService } from 'primeng/api';
 import { Observable, ReplaySubject } from 'rxjs';
@@ -44,7 +45,7 @@ export class BoardUIService {
    * @param robotService The service used to control the robot machine.
    * @param messageService The service used to display status messages in the UI.
    */
-  constructor(private robotService: RobotMachineService, public messageService: MessageService) {
+  constructor(private logger: LoggerService, private robotService: RobotMachineService, public messageService: MessageService) {
     this.initialize();
   }
 
@@ -66,6 +67,7 @@ export class BoardUIService {
    * @param robotPosition The desired position and facing direction of the robot.
    */
   public placeRobot(robotPosition: RobotPosition) {
+    this.logger.log('BoardUIService: placeRobot with Logger: ' + this.logger.id);
     this.robotService.placeRobot(robotPosition);
   }
 
@@ -73,6 +75,7 @@ export class BoardUIService {
    * Reports the current position and direction of the robot.
    */
   public report() {
+    this.logger.log('BoardUIService: report with Logger: ' + this.logger.id);
     this.robotService.report(this.robotPosition);
   }
 
@@ -118,6 +121,8 @@ export class BoardUIService {
    * Sets up the internal observables to reflect current robot state and messages.
    */
   private initialize() {
+    this.logger.log('BoardUIService: Initialized with Logger: ' + this.logger.id);
+
     this.robotService.position$.subscribe((position) => {
       this.robotPosition = position;
       this.positionSubject.next(position);

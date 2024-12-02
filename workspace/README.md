@@ -1,46 +1,5 @@
 # Robot Simulator (Angular)
 
-This project was generated using [Nx](https://nx.dev). One of the main goals is to separate the different concerns of the application into different libraries. This way, the application is more modular and easier to maintain.
-
-This had the following libraries:
-
-- `@buildmotion/robot-toy-componets`: This library contains the UI components.
-- `@buildmotion/toy-robot-service`: This library contains the services that interact with the robot - providing the business logic. This library is also responsible for the state management of the robot. It does not contain any UI elements or concerns.
-
-## Getting Started
-
-- Need to install and use Node.js version 20.12.2 or higher.
-  - this workspace is using NVM to manage the Node.js version.
-  - `nvm ls` # list the installed versions of Node.js
-  - `nvm use 20.12.2`
-- The package manager is Yarn.
-  - `npm install -g yarn`
-- Install the dependencies.
-  - `yarn`
-
-## Running the Application
-
-- Run the application. The following script will build and serve the application.
-  - `yarn serve:ui`
-- Launch the application - use the Run and Debug launch command (F5) in Visual Studio Code.
-
-## Testing the Workspace
-
-- Run the tests.
-  - `yarn test:all`: will run all of the tests in the workspace for each project. You can view the results in the `.coverage` folder.
-
-> See:
->
-> - [UI Components Library](./coverage/libs/toy-robot-components/index.html)
-> - [Toy Robot Service Library](./coverage/libs/toy-robot-service/index.html)
-> - [Robot Simulator Web App](./coverage/apps/toy-robot-ui/index.html)
-
-## Setup and Configuration
-
-The Nx CLI was used to create the application and library projects.
-
-> See: [Setup](./docs/setup.md).
-
 ## Workspace
 
 <a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>

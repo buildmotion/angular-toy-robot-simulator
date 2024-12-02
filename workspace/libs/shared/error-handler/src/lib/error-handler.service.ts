@@ -1,4 +1,6 @@
 import { ErrorHandler, Injectable } from '@angular/core';
+import { LoggerService } from '@buildmotion/logger';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +24,14 @@ import { ErrorHandler, Injectable } from '@angular/core';
  * ```
  */
 export class ErrorHandlerService implements ErrorHandler {
+  id: string;
+
+  constructor(private logger: LoggerService) {
+    this.id = uuidv4();
+
+    this.logger.log(`ErrorHandler: ${this.id}; Initialized`);
+  }
+
   /**
    * Handles errors by logging them to the console.
    *
@@ -36,6 +46,6 @@ export class ErrorHandlerService implements ErrorHandler {
   handleError(error: any): void {
     //TODO: Implement a proper error handling mechanism
     //TODO: WRITE TO CLOUD LOGGING SERVICE; DataDog, Loggly, etc.
-    console.error(error);
+    this.logger.log(`Logger: ${this.logger.id}; Message: ${error.message}`);
   }
 }

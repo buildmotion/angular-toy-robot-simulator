@@ -15,6 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@buildmotion/error-handler": ["libs/shared/error-handler/src/index.ts"],
+      "@buildmotion/logger": ["libs/shared/logger/src/index.ts"],
       "@buildmotion/robot-toy-components": ["libs/toy-robot-components/src/index.ts"],
       "@buildmotion/toy-robot-service": ["libs/toy-robot-service/src/index.ts"]
     }

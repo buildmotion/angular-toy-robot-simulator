@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Direction, Square } from '@buildmotion/toy-robot-service';
 import { Message } from 'primeng/api';
 import { BoardUIService } from './board-ui.service';
+import { LoggerService } from '@buildmotion/logger';
 
 /**
  * Component representing the robot board.
@@ -23,7 +24,9 @@ export class BoardComponent implements OnInit {
 
   // #region Constructors (1)
 
-  constructor(private uiService: BoardUIService) {}
+  constructor(private uiService: BoardUIService, private logger: LoggerService) {
+    this.logger.log('BoardComponent: Initialized with Logger: ' + this.logger.id);
+  }
 
   // #endregion Constructors (1)
 
